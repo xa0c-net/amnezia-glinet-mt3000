@@ -1,0 +1,105 @@
+name: Build AmneziaWG packages
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  owr_branch: "openwrt-24.10"
+  owr_commit: "ebe7c5f1a3"
+  gl_version: "4.6.6"
+  gl_vermagic: "5f888a243508bd63116c3c6987914d47"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Configs
+        uses: actions/checkout@v4
+        with:
+          path: gl
+
+      - name: Checkout AmneziaWG
+        uses: actions/checkout@v4
+        with:
+          path: awg
+          repository: amnezia-vpn/amneziawg-openwrt
+          
+      - name: Checkout OpenWRT
+        uses: actions/checkout@v4
+        with:
+          path: owrt
+          repository: openwrt/openwrt
+          ref: ${{ env.owr_branch }}
+          fetch-depth: 0
+
+      - name: Build OpenWRT Kernel
+        run: |
+          cd owrt
+          echo -e "\e[32m>>> Checkout revision\e[0m"
+          git reset --hard ${{ env.owr_commit }}
+
+          mkdir -p ./package/awg
+          cp -a ../awg/. ./package/awg/
+          ls ./package/awg
+          echo -e "\e[32m>>> Feed update...\e[0m"
+          ./scripts/feeds update -a
+          echo -e "\e[32m>>> Feed install\e[0m"
+          ./scripts/feeds install -a
+
+          echo -e "\e[32m>>> Configuring...\e[0m"
+          cp ../gl/config_${{ env.gl_version }}.buildinfo .config
+          echo "CONFIG_PACKAGE_kmod-amneziawg=m" >> .config
+          echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config
+          echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config
+          make defconfig
+
+          echo -e "\e[1m\e[31m>>> Override VERMAGIC!\e[0m"
+          sed -i 's/grep '\''=\[ym\]'\'' \$(LINUX_DIR)\/\.config\.set | LC_ALL=C sort | \$(MKHASH) md5 > \$(LINUX_DIR)\/\.vermagic.*/echo "${{ env.gl_vermagic }}" > \$(LINUX_DIR)\/\.vermagic/' ./include/kernel-defaults.mk
+
+          echo -e "\e[32m>>> Tools...\e[0m"
+          make tools/install 
+          echo -e "\e[32m>>> Toolchain...\e[0m"
+          make toolchain/install 
+
+          echo -e "\e[32m>>> Building kernel...\e[0m"
+          make target/linux/{clean,compile} -i -j `nproc` V=s
+
+          VERMAGIC=`cat ./build_dir/target-*/linux-*/linux-*/.vermagic`
+          VERMAGIC_EXPECTED=${{ env.gl_vermagic }}
+
+          if [ "$VERMAGIC" != "$VERMAGIC_EXPECTED" ]; then
+            echo Something wrong with VERMAGIC, unexpected changes in /include/kernel-defaults.mk: $VERMAGIC, expected $VERMAGIC_EXPECTED
+            exit 1
+          fi
+          
+      - name: Build AmneziaWG
+        run: |
+          cd owrt
+          echo -e "\e[32m>>> Building Amnezia...\e[0m"
+          make ./package/awg/kmod-amneziawg/{clean,download,prepare} V=s
+          make ./package/awg/kmod-amneziawg/compile -i -j `nproc` V=s
+
+          make ./package/awg/luci-proto-amneziawg/{clean,download,prepare} V=s
+          make ./package/awg/luci-proto-amneziawg/compile -i -j `nproc` V=s
+
+          make ./package/awg/amneziawg-tools/{clean,download,prepare} V=s
+          make ./package/awg/amneziawg-tools/compile -i -j `nproc` V=s
+
+          echo -e "\e[32m>>> Release...\e[0m"
+          mkdir -p awg
+          cp bin/packages/aarch64_cortex-a53/base/amneziawg-tools_*.ipk awg/amneziawg-tools_${{ env.gl_version }}.ipk
+          cp bin/packages/aarch64_cortex-a53/base/luci-proto-amneziawg_*.ipk awg/luci-proto-amneziawg_${{ env.gl_version }}.ipk
+          cp bin/targets/mediatek/filogic/packages/kmod-amneziawg_*.ipk awg/kmod-amneziawg_${{ env.gl_version }}.ipk
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: AneziaWG OpenWRT v${{ env.gl_version }}
+          tag_name: AneziaWG_OpenWRT_v${{ env.gl_version }}
+          files: owrt/awg/*.ipk
