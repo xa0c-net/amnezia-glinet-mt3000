@@ -46,7 +46,6 @@ jobs:
 
           mkdir -p ./package/awg
           cp -a ../awg/. ./package/awg/
-          ls ./package/awg
           echo -e "\e[32m>>> Feed update...\e[0m"
           ./scripts/feeds update -a
           echo -e "\e[32m>>> Feed install\e[0m"
