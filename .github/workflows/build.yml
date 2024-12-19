@@ -11,9 +11,9 @@ permissions:
 
 env:
   owr_branch: "openwrt-24.10"
-  owr_commit: "ebe7c5f1a3"
-  gl_version: "4.6.6"
-  gl_vermagic: "5f888a243508bd63116c3c6987914d47"
+  owr_commit: "ea17e958b9"
+  gl_version: "4.7.0"
+  gl_vermagic: "0645ca2e528c1ec9171c95cdd5761b53"
 
 jobs:
   build:
