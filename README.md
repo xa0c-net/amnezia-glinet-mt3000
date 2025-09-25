@@ -1,7 +1,7 @@
 # AmneziaWG Packages for offical GL.iNET MT-3000 router firmware
 
 ## IMPORTANT INFO!
-Starting from 4.8.2-beta3 (from [BETA](https://dl.gl-inet.com/router/mt3000/beta) tab), AnveziaWG is natively supported by GL.iNET MT-3000, you don't need to install any additional packages (this repository is useless now). \
+Starting from September 25, 2025, firmware v4.8.2-beta3 (from [BETA](https://dl.gl-inet.com/router/mt3000/beta) tab), AnveziaWG is natively supported by GL.iNET MT-3000, you don't need to install any additional packages (this repository is useless now). \
 To stitch back from CN version to Global (DE, with VPN support), run these commands in the router's console:
 ```bash
 echo -n "DE" |dd of=/dev/mtdblock3 bs=1 seek=136
