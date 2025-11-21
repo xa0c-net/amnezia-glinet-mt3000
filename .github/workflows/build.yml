@@ -11,8 +11,8 @@ permissions:
 
 env:
   owr_branch: "openwrt-24.10"
-  owr_commit: "bb59922"
-  gl_version: "4.8.0"
+  owr_commit: "78b23a2"
+  gl_version: "4.8.3"
   gl_vermagic: "9469a6c8c449c47e503c05678ea1559d"
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: awg
-          repository: amnezia-vpn/amneziawg-openwrt
+          repository: Slava-Shchipunov/awg-openwrt
           
       - name: Checkout OpenWRT
         uses: actions/checkout@v4
@@ -99,6 +99,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: AneziaWG OpenWRT v${{ env.gl_version }}
-          tag_name: AneziaWG_OpenWRT_v${{ env.gl_version }}
+          name: v${{ env.gl_version }} AmneziaWG 2.0
+          tag_name: v${{ env.gl_version }}
           files: owrt/awg/*.ipk

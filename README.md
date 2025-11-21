@@ -1,7 +1,12 @@
 # AmneziaWG Packages for offical GL.iNET MT-3000 router firmware
 
 ## IMPORTANT INFO!
-Starting from September 25, 2025, firmware v4.8.2-beta3 (from [BETA](https://dl.gl-inet.com/router/mt3000/beta) tab), AmneziaWG is natively supported by GL.iNET MT-3000, you don't need to install any additional packages (this repository is useless now). \
+Starting from September 25, 2025, firmware v4.8.2-beta3 (from [BETA](https://dl.gl-inet.com/router/mt3000/beta) tab), AmneziaWG (First versions, not newer with updated obfuscations) is natively supported by GL.iNET MT-3000, you don't need to install any additional packages. 
+
+**In this repo AmneziaWG 2.0 available for firmwares after v4.8.3**
+
+### Instructions:
+
 To stitch back from CN version to Global (DE, with VPN support), run these commands in the router's console:
 ```bash
 echo -n "DE" |dd of=/dev/mtdblock3 bs=1 seek=136
@@ -9,9 +14,7 @@ sync
 reboot
 ```
 
-## Old README:
-
-Official op24 GL.iNET firmware could be downloaded [here](https://dl.gl-inet.com/router/mt3000/open) ([mirror](https://github.com/xa0c-net/amnezia-glinet-mt3000/tree/main/firmware))
+Official OpenWRT 24.* GL.iNet firmware could be downloaded [here](https://dl.gl-inet.com/router/mt3000/open) ([mirror](https://github.com/xa0c-net/amnezia-glinet-mt3000/tree/main/firmware))
 
 Installation instructions coud be found here: [Russian](https://github.com/openwrt-xiaomi/awg-openwrt/wiki/AmneziaWG-installing#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-amneziawg-%D0%BD%D0%B0-openwrt-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B5)/[English](https://forum.gl-inet.com/t/feature-request-replace-wireguard-with-amneziawg/44783/124)
 
