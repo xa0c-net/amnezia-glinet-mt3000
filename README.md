@@ -7,7 +7,7 @@ Starting from September 25, 2025, firmware v4.8.2-beta3 (from [BETA](https://dl.
 
 ### Instructions:
 
-To stitch back from CN version to Global (DE, with VPN support), run these commands in the router's console:
+To switch back from CN version to Global (DE, with VPN support), run these commands in the router's console:
 ```bash
 echo -n "DE" |dd of=/dev/mtdblock3 bs=1 seek=136
 sync
